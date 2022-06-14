@@ -308,17 +308,12 @@ def load_label(label_file_name='Segmentation_st16.ORSObject'):
     # Load data from ORS file
     fname = PATH_INPUT_FOLDER + label_file_name
 
-    #guidsListElement = '54ECDDD4AE364AD5B2654377D339334ECxvLabeledMultiROI_XXX'
-    #guids = [guidsListElement]
+    guidsListElement = '54ECDDD4AE364AD5B2654377D339334ECxvLabeledMultiROI'
+    guids = [guidsListElement]
 
-    #importedObjects = OrsObjectPropertiesList.importSpecificObjectsFromFileAndPublish(fname=fname,
-    #                                                                                guids=guids,
-    #                                                                                progress=None)
-
-    importedObjects = OrsObjectPropertiesList.importORSObjectsFromFileAndPublish(filenames=[fname],                                                                   
-                                                                                   progress=None)
-
-
+    importedObjects = OrsObjectPropertiesList.importSpecificObjectsFromFileAndPublish(fname=fname,
+                                                                                    guids=guids,
+                                                                                    progress=None)
     label_channel = importedObjects[0]
   
     # Show labels
