@@ -370,7 +370,7 @@ def make_slicing(image_channel, multiROI=None, view='Z', slices_list=None):
 
         if view == 'Z' or view == 'side' or view == 'sagittal':
             slices = [0]
-            slices_Z.reverse()
+            slices_list.reverse()
             slices.extend(slices_list)
 
         if view == 'Y' or view == 'top' or view == '?':
