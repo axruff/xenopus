@@ -23,6 +23,8 @@ SPACING = 1.23e-06 # Pixel size in micrometers
 SCREENSHOT_WIDTH = 797
 SCREENSHOT_HEIGHT = 499
 
+DISTANCE_DEFAULT = -0.001693
+
 #SCREENSHOT_WIDTH = 1200
 #SCREENSHOT_HEIGHT = 1000
 
@@ -32,7 +34,7 @@ SCREENSHOT_HEIGHT = 499
 #--------------------------------------------------------------
 
 
-def get_camera_from_view(volume_size=(500, 500, 500), view='Z'):
+def get_camera_from_view(volume_size=(500, 500, 500), view='Z', distance= DISTANCE_DEFAULT):
 
     X_size = volume_size[0]
     Y_size = volume_size[1] 
@@ -41,13 +43,13 @@ def get_camera_from_view(volume_size=(500, 500, 500), view='Z'):
     camera = None
 
     if view == 'Z' or view == 'side' or view == 'sagittal':
-        camera = camera_Z_sagittal(X_size, Y_size, Z_size)
+        camera = camera_Z_sagittal(X_size, Y_size, Z_size, distance)
 
     if view == 'Y' or view == 'top' or view == '?':
-        camera = camera_Y_top(X_size, Y_size, Z_size)
+        camera = camera_Y_top(X_size, Y_size, Z_size, distance)
 
     if view == 'X' or view == 'front' or view == '??':
-        camera = camera_X_front(X_size, Y_size, Z_size)
+        camera = camera_X_front(X_size, Y_size, Z_size, distance)
 
     if not camera:
         print('Camera view is not specified correctly')
@@ -122,11 +124,11 @@ def get_crop_box_from_view(slice, volume_size = (500, 500, 500), view='Z'):
 
 
 
-def camera_X_front(X_size=500, Y_size=500, Z_size=500):
+def camera_X_front(X_size=500, Y_size=500, Z_size=500, distance = DISTANCE_DEFAULT):
 
     return orsCamera(
         dir=orsVect(1, -0, -0), 
-        pos=orsVect(-0.00169322, Y_size*SPACING/2.0, Z_size*SPACING/2.0), 
+        pos=orsVect(distance, Y_size*SPACING/2.0, Z_size*SPACING/2.0), 
         up=orsVect(-0, -1, -0), 
         pivot=orsVect(X_size*SPACING/2.0, Y_size*SPACING/2.0, Z_size*SPACING/2.0), 
         vHeight=319, vWidth=646, vTopLefX=0, vTopLeftY=0, vNear=1e-06, vFar=0.35055, 
@@ -138,11 +140,11 @@ def camera_X_front(X_size=500, Y_size=500, Z_size=500):
     )
 
 
-def camera_Y_top(X_size=500, Y_size=500, Z_size=500):
+def camera_Y_top(X_size=500, Y_size=500, Z_size=500, distance = DISTANCE_DEFAULT):
 
     return orsCamera(
         dir=orsVect(0, 1, 0), 
-        pos=orsVect(X_size*SPACING/2.0, -0.00165758634, Z_size*SPACING/2.0), 
+        pos=orsVect(X_size*SPACING/2.0, distance, Z_size*SPACING/2.0), 
         up=orsVect(-1, 0, 0), 
         pivot=orsVect(X_size*SPACING/2.0, Y_size*SPACING/2.0, Z_size*SPACING/2.0), 
         vHeight=319, vWidth=646, vTopLefX=0, vTopLeftY=0, vNear=1e-06, vFar=0.35055, 
@@ -154,11 +156,11 @@ def camera_Y_top(X_size=500, Y_size=500, Z_size=500):
     )
 
 
-def camera_Z_sagittal(X_size=500, Y_size=500, Z_size=500):
+def camera_Z_sagittal(X_size=500, Y_size=500, Z_size=500, distance = DISTANCE_DEFAULT):
 
     return orsCamera(
     dir=orsVect(0, 0, 1), 
-    pos=orsVect(X_size*SPACING/2.0, Y_size*SPACING/2.0, -0.00169322013), 
+    pos=orsVect(X_size*SPACING/2.0, Y_size*SPACING/2.0, distance), 
     up=orsVect(0, -1, 0), 
     pivot=orsVect(X_size*SPACING/2.0, Y_size*SPACING/2.0, Z_size*SPACING/2.0), 
     vHeight=210, vWidth=646, vTopLefX=0, vTopLeftY=0, vNear=1e-06, vFar=0.35055, 
@@ -176,7 +178,7 @@ def get_volume_size(volume_path):
     return (im.size[0], im.size[1], im.n_frames)
 
 
-def set_camera(volume_channel, view = 'Z'):
+def set_camera(volume_channel, view = 'Z', distance = DISTANCE_DEFAULT):
 
     aName_3 = 'toplayout\\scene_0\\0\\3D'
 
@@ -184,7 +186,7 @@ def set_camera(volume_channel, view = 'Z'):
     Y_size = volume_channel.getYSize() 
     Z_size = volume_channel.getZSize() 
 
-    camera = get_camera_from_view(volume_size=(X_size, Y_size, Z_size), view=view)
+    camera = get_camera_from_view(volume_size=(X_size, Y_size, Z_size), view=view, distance=distance)
 
     ViewLogger.setCameraFromLayoutGenealogicalName(aName=aName_3,
                                                 camera=camera)
@@ -308,12 +310,17 @@ def load_label(label_file_name='Segmentation_st16.ORSObject'):
     # Load data from ORS file
     fname = PATH_INPUT_FOLDER + label_file_name
 
-    guidsListElement = '54ECDDD4AE364AD5B2654377D339334ECxvLabeledMultiROI'
-    guids = [guidsListElement]
+    #guidsListElement = '54ECDDD4AE364AD5B2654377D339334ECxvLabeledMultiROI_XXX'
+    #guids = [guidsListElement]
 
-    importedObjects = OrsObjectPropertiesList.importSpecificObjectsFromFileAndPublish(fname=fname,
-                                                                                    guids=guids,
-                                                                                    progress=None)
+    #importedObjects = OrsObjectPropertiesList.importSpecificObjectsFromFileAndPublish(fname=fname,
+    #                                                                                guids=guids,
+    #                                                                                progress=None)
+
+    importedObjects = OrsObjectPropertiesList.importORSObjectsFromFileAndPublish(filenames=[fname],                                                                   
+                                                                                   progress=None)
+
+
     label_channel = importedObjects[0]
   
     # Show labels
@@ -336,7 +343,7 @@ def load_label(label_file_name='Segmentation_st16.ORSObject'):
 
 
 
-def make_slicing(image_channel, multiROI=None, view='Z', slices=None):
+def make_slicing(image_channel, multiROI=None, view='Z', slices_list=None):
 
     view_name = 'toplayout\\scene_0\\0\\3D'
 
@@ -353,27 +360,29 @@ def make_slicing(image_channel, multiROI=None, view='Z', slices=None):
                                                                              isVisible=True)
 
 
-    #slices = []
-    slices_X = [213, 513, 744]
-    slices_Y = [990, 714, 597]
-    slices_Z = [567, 468]
+    slices = []
 
-    #slices_list = []
+    #slices_X = [213, 513, 744]
+    #slices_Y = [990, 714, 597]
+    #slices_Z = [567, 468]
 
-    if slices is None: 
+    if slices_list is not None: 
 
         if view == 'Z' or view == 'side' or view == 'sagittal':
             slices = [0]
-            slices_Z.reverse()
-            slices.extend(slices_Z)
+            slices_list.reverse()
+            slices.extend(slices_list)
 
         if view == 'Y' or view == 'top' or view == '?':
             slices = [0]
-            slices.extend(slices_Y)
+            slices.extend(slices_list)
 
         if view == 'X' or view == 'front' or view == '??':
             slices = [0]
-            slices.extend(slices_X)
+            slices.extend(slices_list)
+
+    else:
+        print('No slices are specified!')
 
     #print('Slices:', slices)
 
@@ -450,14 +459,14 @@ def make_slicing(image_channel, multiROI=None, view='Z', slices=None):
 
 
     
-def screenshot(image_channel, multiROI=None, view='Z'):
+def screenshot(image_channel, multiROI=None, view='Z', slices = None, distance = DISTANCE_DEFAULT):
 
-    set_camera(image_channel,view=view)
-    make_slicing(image_channel, multiROI, view=view)
+    set_camera(image_channel,view=view, distance=distance)
+    make_slicing(image_channel, multiROI, view=view, slices_list=slices)
 
 
-def all_screenshots(image_channel, multiROI=None):
+def all_screenshots(image_channel, multiROI=None, slices_first = None, slices_second = None, slices_third = None, distance = DISTANCE_DEFAULT):
 
-    screenshot(image_channel, multiROI, view='X')
-    screenshot(image_channel, multiROI, view='Y')
-    screenshot(image_channel, multiROI, view='Z')
+    screenshot(image_channel, multiROI, view='X', slices =slices_second, distance=distance)
+    screenshot(image_channel, multiROI, view='Y', slices =slices_first, distance=distance)
+    screenshot(image_channel, multiROI, view='Z', slices =slices_third, distance=distance)
