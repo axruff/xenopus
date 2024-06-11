@@ -15,8 +15,10 @@ from PIL import Image
 # Global settings
 #--------------------------------------------------------------
 
-PATH_INPUT_FOLDER = 'C:/Users/fe0968/Documents/data/xenopus/Alexey_dragonscripts/'
-PATH_OUTPUT_FOLDER = 'C:/Users/fe0968/Documents/data/xenopus/Alexey_dragonscripts/output/'
+#PATH_INPUT_FOLDER = 'C:/Users/fe0968/Documents/data/xenopus/Alexey_dragonscripts/'
+#PATH_OUTPUT_FOLDER = 'C:/Users/fe0968/Documents/data/xenopus/Alexey_dragonscripts/output/'
+
+PATH_INPUT_FOLDER = 'c:/Users/fe0968/Documents/data/medaka/landmarks/'
 
 SPACING = 1.23e-06 # Pixel size in micrometers
 
