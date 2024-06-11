@@ -23,8 +23,6 @@ from bs4 import BeautifulSoup
 import json
 
 
-table_path = '/mnt/LSDF/tomo/ershov/xenopus/_alignment/'
-
 def convert_path(path):
     prefix = '/mnt/HD-LSDF/Xenopus/'
     pw = PureWindowsPath(path)
@@ -51,11 +49,13 @@ def get_datasets_size(dt):
 
     return total_size
 
-def process_dataset(i):
+def process_dataset(d):
 
-    path = dt.iloc[i]['path']
+    path = dt.loc[dt['Naming'] == d]['path'].values[0]
+    #path = dt.iloc[i]['path']
     path = convert_path(path)
-    dataset = dt.iloc[i]['Naming']
+    #dataset = dt.iloc[i]['Naming']
+    dataset = d
 
     print(f'Reading: {dataset}')
 
@@ -256,7 +256,6 @@ def plot_volume_slices_4_views_as_dragonfly(image, dataset):
     ax2.plot(math.floor(sx/2),math.floor(sy/2),'go') 
     #plt.show()
 
-    print(sy)
     ax3.imshow(image[:,int(sy/2),:], cmap='gray')
     ax3.axis('off')
     #rect = patches.Rectangle((math.floor(cr['x']/2), math.floor(cr['z']/2)), math.floor(cr['w']/2), math.floor(cr['d']/2), linewidth=1, edgecolor='g', facecolor='none')
@@ -272,7 +271,20 @@ def plot_volume_slices_4_views_as_dragonfly(image, dataset):
     #plt.show()
 
     #plt.show()
-    fig.savefig(preview_path / f'{dataset}_new.png')
+    fig.savefig(preview_path / f'{dataset}_preview.png')
+
+def list_files_in_directory(directory_path):
+    file_names = []
+    
+    # Iterate over all files in the directory
+    for filename in os.listdir(directory_path):
+        file_path = os.path.join(directory_path, filename)
+        
+        # Check if it's a file (and not a directory)
+        if os.path.isfile(file_path):
+            file_names.append(filename)
+    
+    return file_names
 
 
 
@@ -288,7 +300,11 @@ if __name__ == "__main__":
     #sz = get_datasets_size(dt)
     #print('Total size', sz)
 
-    dataset_list = [75]
+    #dataset_list = [75]
+    dataset_list = [f.split('_rot_info')[0] for f in list_files_in_directory(align_path) if '_rot_info' in f]
+    #dataset_list = ['A2p1_18_05']
 
-    pool = mp.Pool(1)
+    dataset_list.remove('A2p1_09_05')
+
+    pool = mp.Pool(10)
     res = pool.map(process_dataset, dataset_list)
